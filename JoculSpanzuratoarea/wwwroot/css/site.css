@@ -1,0 +1,36 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.guess {
+    letter-spacing: 1em;
+}
+
+.success {
+    color: green;
+}
+
+#failCount {
+    font-weight: bold;
+}
+
+.btn-outline-info:hover {
+    color: white;
+}
+
+

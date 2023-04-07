@@ -1,0 +1,90 @@
+﻿@page "{handler?}"
+@using Microsoft.AspNetCore.Http
+@model JoculSpanzuratoarea.Pages.Spanzuratoarea.SpanzuratoareaModel
+
+<div>
+    <h1>Spânzurătoarea Online</h1>
+
+    <div class="d-flex flex-row">
+            <p>@Model.EntryWord.Description</p>
+    </div>
+    <div  class="flex-row"> 
+            <p>@Model.DefinitionOfEntry?.InternalRep</p>
+    </div>
+    <h2>Ghicește cuvântul alegând câte o literă.</h2>
+    <h3 id="infoStateGame">Mai poți alege <span id="failCount" class="text-success">6</span> litere greșite.</h3>
+    <h2 id="success"></h2>
+    <h2 id="wordDefinition"></h2>
+    <h1 id="guess" class="guess">@Model.maskedWordToGuess</h1>
+
+    <div class="d-flex flex-row flex-wrap">
+        <form method="post">
+            @foreach (var letter in Model.alphabet)
+            {
+                <button onClick="onLetterClick('@letter')"
+                    class="btn btn-info m-2 px-4 py-2"
+                    style="color: white;"
+                    type="button">
+                    @letter
+                </button>
+            }
+        </form>
+
+        <form method="post">
+            <button class="btn btn-outline-info m-2 px-4 py-2" type="submit">
+                Restart Game
+            </button>
+        </form>
+    </div>
+</div>
+
+@section scripts{
+<script>
+    function onLetterClick(letter) {
+        var xhr = new XMLHttpRequest();
+
+        xhr.onreadystatechange = function ()
+        {
+            if (this.readyState == 4 && this.status == 200)
+            {
+                var response = JSON.parse(this.responseText);
+                document.getElementById('guess').innerHTML = response["maskedWordToGuess"];
+                if (response["guessedFullWord"])
+                {
+                    document.getElementById('success').innerHTML = "Ai câștigat!";
+                    document.getElementById('wordDefinition').innerHTML = "definition from dex";
+                    document.getElementById('success').classList.add("success");
+
+                }
+                else
+                {
+                   var failCount = 6 - response["failCount"];
+                   document.getElementById('failCount').innerHTML = "" + failCount;
+                   switch (failCount)
+                   {
+                       case 4:
+                       case 3:
+                       case 2:
+                        document.getElementById('failCount').classList.add("text-warning");
+                        document.getElementById('failCount').classList.remove("text-success");
+                        break;
+                       case 1:
+                       case 0:
+                        document.getElementById('failCount').classList.add("text-danger");
+                        document.getElementById('failCount').classList.remove("text-success");
+                        document.getElementById('failCount').classList.remove("text-warning");
+                        break;
+                       default:
+                   }
+                }
+            }
+        };
+
+        xhr.open('POST', '/Spanzuratoarea/Spanzuratoarea?handler=LetterClick');
+        xhr.setRequestHeader("XSRF-TOKEN",
+        $('input:hidden[name="__RequestVerificationToken"]').val());
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(JSON.stringify({letter}));
+    }
+</script>
+}
