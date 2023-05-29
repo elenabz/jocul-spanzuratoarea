@@ -35,7 +35,13 @@ namespace JoculSpanzuratoarea.Pages.Spanzuratoarea
             Random random = new Random();
             int id = random.Next(3, 323319);
 
-            // jois 2 tables 
+            // ======== get the Definition using include 
+
+            Entry entryWithDefinition = _context.Entries.Include(entry => entry.EntryDefinitions).ThenInclude(entryDefinition => entryDefinition.Definition).Where(e => e.Id >= id).Where(e => e.Usable == true).First();
+            Console.WriteLine(entryWithDefinition.EntryDefinitions.First().Definition.InternalRep);
+
+
+            // joins 2 tables 
 
             var wordFromDexWithDefinition = _context.Entries
                 .Join(_context.EntryDefinitions, e => e.Id, ed => ed.EntryId, (e, ed) => new {EntryDefinition = ed, Entry = e})
@@ -47,10 +53,10 @@ namespace JoculSpanzuratoarea.Pages.Spanzuratoarea
             //Console.WriteLine(wordFromDexWithDefinition.Definition.Lexicon);
 
 
-            // =========
+            // ========= get only the word
 
-            //Entry wordFromDex = _context.Entries.Where(w => w.Id >= id).Where(w => w.Usable == true).First();
-            //bool wordContainsPunctuation = wordFromDex.Description.IndexOfAny(new char[] { '(', '/' }) != -1;
+            // Entry wordFromDex = _context.Entries.Where(w => w.Id >= id).Where(w => w.Usable == true).First();
+            // bool wordContainsPunctuation = wordFromDex.Description.IndexOfAny(new char[] { '(', '/' }) != -1;
             bool wordContainsPunctuation = EntryWord.Description.IndexOfAny(new char[] { '(', '/' }) != -1;
             if (wordContainsPunctuation)
             {

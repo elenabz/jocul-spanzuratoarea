@@ -67,11 +67,10 @@ app.Run();
  * diacritice
  * description
  * get definition of word from dex
- * 
+ * git repository 
  * 
  * fix get word from db each time a letter is selected 
  * change session with db data
- * git repository 
  * move game on home page 
  * images for game 
  * styling
