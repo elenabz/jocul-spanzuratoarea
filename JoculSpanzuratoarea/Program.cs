@@ -76,3 +76,5 @@ app.Run();
  * styling
  * 
  */
+
+// @page "/index" pentru a seta ruta pentru aceasta pagina 
