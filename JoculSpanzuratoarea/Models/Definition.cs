@@ -32,6 +32,6 @@ public partial class Definition
     public int ModDate { get; set; }
 
     public int ModUserId { get; set; }
-    public IList<EntryDefinition> EntryDefinitions { get; set; }
+    public IList<EntryDefinition>? EntryDefinitions { get; set; }
 
 }

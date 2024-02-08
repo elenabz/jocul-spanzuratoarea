@@ -18,8 +18,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(
         );
 
 // Add services to the container.
-builder.Services.AddRazorPages();
+builder.Services.AddRazorPages(); // specific to Razor Pages: AddRazorPages()
 builder.Services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");
+
+// add distributed memory cache session =  store objects in memory 
+// session = dictionary, key value pairs
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -52,6 +55,9 @@ app.UseAuthorization();
 
 app.UseSession();
 
+// specific to Razor Pages: MapRazorPages() + the routing maps to what is in Pages folder
+// the Controller and View folders from .net MVC are replaced with Pages folder
+// PageModel class replace the Controller from MVC 
 app.MapRazorPages();
 
 app.Run();
@@ -78,3 +84,23 @@ app.Run();
  */
 
 // @page "/index" pentru a seta ruta pentru aceasta pagina 
+
+// MVC = add a View(page)
+// Razor Pages = add a Razor Page and a Page Model 
+
+// @page = Razor Page 
+// Razor routing = /page_under_Pages_folder || /folder_under_Pages_folder/page
+// if Razor can't find the page to redirect will not display page not found or an error 
+
+/* tag helpers
+ * MVC: asp-controller + asp-action = Razor PAges: asp-page="page" || "folder/page"(complete route ) (asp-route-params for MVC + RzPg)
+ * 
+ * [BindProperty]  for a property in PageModel will bind to the values that are send to post action of the page 
+ *  (|| [BindPropertis] -> for all properties of the model)
+ * 
+ * OnGet() can have params
+ * 
+ 
+ 
+ 
+ */

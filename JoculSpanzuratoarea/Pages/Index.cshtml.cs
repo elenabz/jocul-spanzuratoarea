@@ -6,20 +6,24 @@ using System.Text.RegularExpressions;
 
 namespace JoculSpanzuratoarea.Pages
 {
+
+    // session variables
+    public enum SessionKeyEnum
+    {
+        SessionKeyWord,
+        SessionKeyMaskedWord,
+        SessionKeyFailCount,
+        SessionKeyGuessedFullWord
+    }
     public class IndexModel : PageModel
     {
         private readonly ILogger<IndexModel> _logger;
 
+        // proper ties from PageModel will be accessed from page through @model that's why we don't need to return anything from OnGet()
+        // the page (.cshtml) has access to properties from PageModel (.cshtml.cs)
         public Entry EntryWord { get; set; } = new Entry();
         public Definition DefinitionOfEntry { get; set; } = new Definition();
-
-        public const string SessionKeyWord = "_Word";
-        public const string SessionKeyMaskedWord = "_MaskedWord";
-        public const string SessionKeyFailCount = "_FailCount";
-        public const string SessionKeyGuessedFullWord = "_GuessedFullWord";
-
         public List<char> alphabet = "AĂÂBCDEFGHIÎJKLMNOPQRSȘTȚUVWXYZ".ToList();
-        public List<string> words = new List<string>() { "first", "second", "third" };
         public string wordToGuess = "";
         public string maskedWordToGuess = "";
 
@@ -52,7 +56,7 @@ namespace JoculSpanzuratoarea.Pages
                 .Where(e => e.EntryDefinition.Entry.Id >= id).Where(e => e.EntryDefinition.Entry.Usable == true).First();
             EntryWord = wordFromDexWithDefinition.EntryDefinition.Entry;
             DefinitionOfEntry = wordFromDexWithDefinition.Definition;
-            DefinitionOfEntry.InternalRep = CleanDefinition(DefinitionOfEntry.InternalRep);
+            DefinitionOfEntry.InternalRep = CleanDefinition(DefinitionOfEntry?.InternalRep);
             //Console.WriteLine(wordFromDexWithDefinition.Definition.Lexicon);
 
 
@@ -72,7 +76,8 @@ namespace JoculSpanzuratoarea.Pages
 
         public string CleanDefinition(string definition)
         {
-            return Regex.Replace(definition, "[$@#[].*[]#$@]", "");
+            // return Regex.Replace(definition, "[$@#[].*[]#$@]", "");
+            return definition;
         }
         public string CleanWord(string word)
         {
@@ -86,16 +91,16 @@ namespace JoculSpanzuratoarea.Pages
 
         private void ResetGame()
         {
-            HttpContext.Session.Remove(SessionKeyWord);
-            HttpContext.Session.Remove(SessionKeyMaskedWord);
-            HttpContext.Session.Remove(SessionKeyFailCount);
-            HttpContext.Session.Remove(SessionKeyGuessedFullWord);
+            HttpContext.Session.Remove(SessionKeyEnum.SessionKeyWord.ToString());
+            HttpContext.Session.Remove(SessionKeyEnum.SessionKeyMaskedWord.ToString());
+            HttpContext.Session.Remove(SessionKeyEnum.SessionKeyFailCount.ToString());
+            HttpContext.Session.Remove(SessionKeyEnum.SessionKeyGuessedFullWord.ToString());
             SetWord();
         }
 
         public IActionResult OnPost()
         {
-            return RedirectToPage("/Index");
+            return RedirectToPage("/Index"); // | "Index" ?
 
         }
         public JsonResult OnPostLetterClick([FromBody] LetterPostData letterData)
@@ -107,10 +112,8 @@ namespace JoculSpanzuratoarea.Pages
 
         private void SetWord()
         {
-            int wordIdx = (new Random()).Next(words.Count);
-            //string word = words[wordIdx].ToLower();
             string word = EntryWord.Description.ToLower();
-            HttpContext.Session.SetString(SessionKeyWord, word);
+            HttpContext.Session.SetString(SessionKeyEnum.SessionKeyWord.ToString(), word);
             string maskedWord = "";
             for (int i = 0; i < word.Length; i++)
             {
@@ -124,54 +127,54 @@ namespace JoculSpanzuratoarea.Pages
 
         private void SetMaskedWord(string maskedWord)
         {
-            HttpContext.Session.SetString(SessionKeyMaskedWord, maskedWord);
+            HttpContext.Session.SetString(SessionKeyEnum.SessionKeyMaskedWord.ToString(), maskedWord);
             return;
         }
         private void IncrementFailCount()
         {
-            int sessionFailCount = (HttpContext.Session.GetInt32(SessionKeyFailCount) ?? 0) + 1;
-            HttpContext.Session.SetInt32(SessionKeyFailCount, sessionFailCount);
+            int sessionFailCount = (HttpContext.Session.GetInt32(SessionKeyEnum.SessionKeyFailCount.ToString()) ?? 0) + 1;
+            HttpContext.Session.SetInt32(SessionKeyEnum.SessionKeyFailCount.ToString(), sessionFailCount);
             return;
         }
         private void SetGuessedFullWord()
         {
-            HttpContext.Session.SetInt32(SessionKeyGuessedFullWord, 1);
+            HttpContext.Session.SetInt32(SessionKeyEnum.SessionKeyGuessedFullWord.ToString(), 1);
             return;
         }
         private int GetGuessedFullWord()
         {
-            int sessionGuessedFullWord = HttpContext.Session.GetInt32(SessionKeyGuessedFullWord) ?? 0;
+            int sessionGuessedFullWord = HttpContext.Session.GetInt32(SessionKeyEnum.SessionKeyGuessedFullWord.ToString()) ?? 0;
             return sessionGuessedFullWord;
         }
         public string GetSessionWord()
         {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString(SessionKeyWord)))
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString(SessionKeyEnum.SessionKeyWord.ToString())))
             {
                 SetWord();
             }
 
-            string sessionWord = HttpContext.Session.GetString(SessionKeyWord) ?? "";
+            string sessionWord = HttpContext.Session.GetString(SessionKeyEnum.SessionKeyWord.ToString()) ?? "";
             return sessionWord;
 
         }
         public string GetSessionMaskedWord()
         {
-            string sessionMaskedWord = HttpContext.Session.GetString(SessionKeyMaskedWord) ?? "";
+            string sessionMaskedWord = HttpContext.Session.GetString(SessionKeyEnum.SessionKeyMaskedWord.ToString()) ?? "";
             return sessionMaskedWord;
 
         }
         public int GetSessionFailCount()
         {
-            int sessionFailCount = HttpContext.Session.GetInt32(SessionKeyFailCount) ?? 0;
+            int sessionFailCount = HttpContext.Session.GetInt32(SessionKeyEnum.SessionKeyFailCount.ToString()) ?? 0;
             return sessionFailCount;
 
         }
 
-        private GameStateData ComputeGameState(string playLetter)
+        private GameState ComputeGameState(string playLetter)
         {
             string word = GetSessionWord();
             string maskedWord = GetSessionMaskedWord();
-            GameStateData responseData = new GameStateData();
+            GameState responseData = new GameState();
             List<int> letterMatches = new List<int>();
             if (GetSessionFailCount() < 6)
             {
@@ -207,28 +210,5 @@ namespace JoculSpanzuratoarea.Pages
             responseData.FailCount = GetSessionFailCount();
             return responseData;
         }
-    }
-
-    public class PostData
-    {
-        public int Id { get; set; }
-        public string Title { get; set; } = "";
-    }
-    public class LetterPostData
-    {
-        public string Letter { get; set; } = "";
-    }
-    public class GameStateData
-    {
-        public bool GuessedLetter { get; set; } = false;
-        public int GuessedFullWord { get; set; } = 0;
-        public string MaskedWordToGuess { get; set; } = "";
-        public int FailCount { get; set; } = 0;
-
-    }
-
-    public class AppPostData
-    {
-        public PostData Data { get; set; } = new PostData();
     }
 }
