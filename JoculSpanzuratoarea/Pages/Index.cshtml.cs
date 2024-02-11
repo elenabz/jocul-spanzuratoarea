@@ -42,43 +42,31 @@ namespace JoculSpanzuratoarea.Pages
             Random random = new Random();
             int id = random.Next(3, 323319);
 
-            // ======== get the Definition using include 
+            // ======== get the Definition using include
+            Entry entryWithDefinition = _context.Entries
+                .Include(entry => entry.EntryDefinitions)
+                .ThenInclude(entryDefinition => entryDefinition.Definition)
+                .Where(e => e.Id >= id)
+                .Where(e => e.Usable == true)
+                .First();
 
-            Entry entryWithDefinition = _context.Entries.Include(entry => entry.EntryDefinitions).ThenInclude(entryDefinition => entryDefinition.Definition).Where(e => e.Id >= id).Where(e => e.Usable == true).First();
-            Console.WriteLine(entryWithDefinition.EntryDefinitions.First().Definition.InternalRep);
-
-
-            // joins 2 tables 
-
+            // joins 2 tables
             var wordFromDexWithDefinition = _context.Entries
                 .Join(_context.EntryDefinitions, e => e.Id, ed => ed.EntryId, (e, ed) => new { EntryDefinition = ed, Entry = e })
                 .Join(_context.Definitions, ed => ed.EntryDefinition.DefinitionId, d => d.Id, (ed, d) => new { EntryDefinition = ed, Definition = d })
                 .Where(e => e.EntryDefinition.Entry.Id >= id).Where(e => e.EntryDefinition.Entry.Usable == true).First();
+
             EntryWord = wordFromDexWithDefinition.EntryDefinition.Entry;
             DefinitionOfEntry = wordFromDexWithDefinition.Definition;
-            DefinitionOfEntry.InternalRep = CleanDefinition(DefinitionOfEntry?.InternalRep);
-            //Console.WriteLine(wordFromDexWithDefinition.Definition.Lexicon);
 
-
-            // ========= get only the word
-
-            // Entry wordFromDex = _context.Entries.Where(w => w.Id >= id).Where(w => w.Usable == true).First();
-            // bool wordContainsPunctuation = wordFromDex.Description.IndexOfAny(new char[] { '(', '/' }) != -1;
             bool wordContainsPunctuation = EntryWord.Description.IndexOfAny(new char[] { '(', '/' }) != -1;
             if (wordContainsPunctuation)
             {
-                //wordFromDex.Description = CleanWord(wordFromDex.Description);
                 EntryWord.Description = CleanWord(EntryWord.Description);
             }
-            //EntryWord = wordFromDex;
             return;
         }
 
-        public string CleanDefinition(string definition)
-        {
-            // return Regex.Replace(definition, "[$@#[].*[]#$@]", "");
-            return definition;
-        }
         public string CleanWord(string word)
         {
             int indexOfNonLetter = word.IndexOfAny(new char[] { '(', '/' });
@@ -100,7 +88,7 @@ namespace JoculSpanzuratoarea.Pages
 
         public IActionResult OnPost()
         {
-            return RedirectToPage("/Index"); // | "Index" ?
+            return RedirectToPage("Index");
 
         }
         public JsonResult OnPostLetterClick([FromBody] LetterPostData letterData)
@@ -146,6 +134,7 @@ namespace JoculSpanzuratoarea.Pages
             int sessionGuessedFullWord = HttpContext.Session.GetInt32(SessionKeyEnum.SessionKeyGuessedFullWord.ToString()) ?? 0;
             return sessionGuessedFullWord;
         }
+
         public string GetSessionWord()
         {
             if (string.IsNullOrEmpty(HttpContext.Session.GetString(SessionKeyEnum.SessionKeyWord.ToString())))
@@ -155,19 +144,18 @@ namespace JoculSpanzuratoarea.Pages
 
             string sessionWord = HttpContext.Session.GetString(SessionKeyEnum.SessionKeyWord.ToString()) ?? "";
             return sessionWord;
-
         }
+
         public string GetSessionMaskedWord()
         {
             string sessionMaskedWord = HttpContext.Session.GetString(SessionKeyEnum.SessionKeyMaskedWord.ToString()) ?? "";
             return sessionMaskedWord;
-
         }
+
         public int GetSessionFailCount()
         {
             int sessionFailCount = HttpContext.Session.GetInt32(SessionKeyEnum.SessionKeyFailCount.ToString()) ?? 0;
             return sessionFailCount;
-
         }
 
         private GameState ComputeGameState(string playLetter)

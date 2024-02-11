@@ -21,7 +21,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(
 builder.Services.AddRazorPages(); // specific to Razor Pages: AddRazorPages()
 builder.Services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");
 
-// add distributed memory cache session =  store objects in memory 
+// add distributed memory cache session = store objects in memory 
 // session = dictionary, key value pairs
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
@@ -59,7 +59,6 @@ app.UseSession();
 // the Controller and View folders from .net MVC are replaced with Pages folder
 // PageModel class replace the Controller from MVC 
 app.MapRazorPages();
-
 app.Run();
 
 
@@ -102,5 +101,22 @@ app.Run();
  * 
  
  
+
+session: 
+    session variables 
+    public enum SessionKeyEnum
+    {
+        SessionKeyWord,
+        SessionKeyMaskedWord,
+        SessionKeyFailCount,
+        SessionKeyGuessedFullWord
+    }
+
+-- remove session variable
+HttpContext.Session.Remove(SessionKeyEnum.SessionKeyWord.ToString());
+
+-- get and set session variables 
+HttpContext.Session.SetString(SessionKeyEnum.SessionKeyWord.ToString(), word);
+HttpContext.Session.GetInt32(SessionKeyEnum.SessionKeyFailCount.ToString())
  
  */
