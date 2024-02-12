@@ -119,4 +119,7 @@ HttpContext.Session.Remove(SessionKeyEnum.SessionKeyWord.ToString());
 HttpContext.Session.SetString(SessionKeyEnum.SessionKeyWord.ToString(), word);
 HttpContext.Session.GetInt32(SessionKeyEnum.SessionKeyFailCount.ToString())
  
+
+"{handler?}" 
+use it to have a short url call : /Index/LetterClick instead of  /Index/?handler=LetterClick
  */
