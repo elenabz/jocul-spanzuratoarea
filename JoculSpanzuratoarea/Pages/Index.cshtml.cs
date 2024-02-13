@@ -11,6 +11,7 @@ namespace JoculSpanzuratoarea.Pages
     public enum SessionKeyEnum
     {
         SessionKeyWord,
+        SessionKeyWordDefinition,
         SessionKeyMaskedWord,
         SessionKeyFailCount,
         SessionKeyGuessedFullWord
@@ -21,10 +22,11 @@ namespace JoculSpanzuratoarea.Pages
 
         // proper ties from PageModel will be accessed from page through @model that's why we don't need to return anything from OnGet()
         // the page (.cshtml) has access to properties from PageModel (.cshtml.cs)
-        public Entry EntryWord { get; set; } = new Entry();
-        public Definition DefinitionOfEntry { get; set; } = new Definition();
+        // private can't be accessed from razor page
+        private Entry EntryWord { get; set; } = new Entry();
+        private Definition DefinitionOfEntry { get; set; } = new Definition();
+
         public List<char> alphabet = "AĂÂBCDEFGHIÎJKLMNOPQRSȘTȚUVWXYZ".ToList();
-        public string wordToGuess = "";
         public string maskedWordToGuess = "";
 
         public readonly ApplicationDbContext _context;
@@ -80,6 +82,7 @@ namespace JoculSpanzuratoarea.Pages
         private void ResetGame()
         {
             HttpContext.Session.Remove(SessionKeyEnum.SessionKeyWord.ToString());
+            HttpContext.Session.Remove(SessionKeyEnum.SessionKeyWordDefinition.ToString());
             HttpContext.Session.Remove(SessionKeyEnum.SessionKeyMaskedWord.ToString());
             HttpContext.Session.Remove(SessionKeyEnum.SessionKeyFailCount.ToString());
             HttpContext.Session.Remove(SessionKeyEnum.SessionKeyGuessedFullWord.ToString());
@@ -101,7 +104,9 @@ namespace JoculSpanzuratoarea.Pages
         private void SetWord()
         {
             string word = EntryWord.Description.ToLower();
+            string wordDefinition = DefinitionOfEntry.InternalRep ?? "";
             HttpContext.Session.SetString(SessionKeyEnum.SessionKeyWord.ToString(), word);
+            HttpContext.Session.SetString(SessionKeyEnum.SessionKeyWordDefinition.ToString(), wordDefinition);
             string maskedWord = "";
             for (int i = 0; i < word.Length; i++)
             {
@@ -192,6 +197,8 @@ namespace JoculSpanzuratoarea.Pages
             if (!maskedWord.Contains('_'))
             {
                 SetGuessedFullWord();
+                responseData.Word = word;
+                responseData.WordDefinition = HttpContext.Session.GetString(SessionKeyEnum.SessionKeyWordDefinition.ToString()) ?? "";
             }
             responseData.MaskedWordToGuess = maskedWord;
             responseData.GuessedFullWord = GetGuessedFullWord();

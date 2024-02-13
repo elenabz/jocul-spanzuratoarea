@@ -2,46 +2,45 @@
 @using Microsoft.AspNetCore.Http
 @model JoculSpanzuratoarea.Pages.IndexModel
 
-<div>
-    <h1>Spânzurătoarea</h1>
-
-    <div class="d-flex flex-row">
-            <p>@Model.EntryWord.Description</p>
-    </div>
-    <div  class="flex-row"> 
-            <p>@Model.DefinitionOfEntry?.InternalRep</p>
-    </div>
-    <h2>Ghicește cuvântul alegând câte o literă.</h2>
-    <h3 id="infoStateGame">Mai poți alege <span id="failCount" class="text-success">6</span> litere greșite.</h3>
-    <h2 id="success"></h2>
-    <h2 id="wordDefinition"></h2>
-    <h1 id="guess" class="guess">@Model.maskedWordToGuess</h1>
-
-    <div class="d-flex flex-row flex-wrap">
+<div class="game-info">
+    <div class="play-info">
+        <h5>Ghicește cuvântul selectând câte o literă.</h5>
+        <h5 id="infoStateGame">
+            Mai poți alege <span id="failCount" class="text-success">6</span> litere greșite.
+        </h5>
+        <h5 id="guess" class="guess">@Model.maskedWordToGuess</h5>
         <form method="post">
             @foreach (var letter in Model.alphabet)
             {
                 <button onClick="onLetterClick('@letter')"
-                    class="btn btn-info m-2 px-4 py-2"
-                    style="color: white;"
-                    type="button">
+                        class="btn btn-light m-2 px-4 py-2"
+                        style="color: white;"
+                        type="button">
                     @letter
                 </button>
             }
         </form>
+    </div>
 
+    <div class="win-info">
+        <h2 id="success"></h2>
+        <h2 id="word"></h2>
+        <h6 id="wordDefinition"></h6>
+    </div>
+
+    <div>
         <form method="post">
-            <button class="btn btn-outline-info m-2 px-4 py-2" type="submit">
+            <button type="submit" class="btn btn-outline-info m-2 px-4 py-2">
                 Restart Game
             </button>
         </form>
     </div>
 </div>
 
-@section scripts{
-<script>
+@section scripts {
+    <script>
         function onLetterClick(letter) {
-        fetch('LetterClick', {
+            fetch('LetterClick', {
                 method: "POST",
                 body: JSON.stringify({ letter }),
                 headers: {
@@ -49,13 +48,17 @@
                     "Xsrf-Token": $('input[name="__RequestVerificationToken"]').val()
                 },
             })
-            .then((response) => response.json() )
-            .then((response) => {
+                .then((response) => response.json())
+                .then((response) => {
                     document.getElementById('guess').innerHTML = response["maskedWordToGuess"];
                     if (response["guessedFullWord"]) {
-                        document.getElementById('success').innerHTML = "Ai câștigat!";
-                        document.getElementById('wordDefinition').innerHTML = "definition from dex";
+                        const playInfo = document.getElementsByClassName("play-info");
+                        playInfo[0].style.display = 'none';
                         document.getElementById('success').classList.add("success");
+
+                        document.getElementById('success').innerHTML = "Ai câștigat!";
+                        document.getElementById('word').innerHTML = response["word"];
+                        document.getElementById('wordDefinition').innerHTML = response["wordDefinition"];
 
                     }
                     else {
@@ -77,7 +80,7 @@
                             default:
                         }
                     }
-            });
-    }
-</script>
+                });
+        }
+    </script>
 }

@@ -122,4 +122,7 @@ HttpContext.Session.GetInt32(SessionKeyEnum.SessionKeyFailCount.ToString())
 
 "{handler?}" 
 use it to have a short url call : /Index/LetterClick instead of  /Index/?handler=LetterClick
+
+The Razor variables are "Server side variables" and they don't exist anymore after the page was sent to the "Client side"
+You can not use Javascript variables in C#, because javascript code is available only after C# / Razor is rendered.
  */

@@ -29,8 +29,35 @@ body {
     font-weight: bold;
 }
 
-.btn-outline-info:hover {
+.btn-light {
+    background-color: #5c277a;
+    border: none;
+}
+
+.btn-outline-info:hover, .btn-outline-info:active, .btn-outline-info:visited, .btn-outline-info:focus {
     color: white;
+    background-color: #916fa3;
+    border: none;
+}
+
+.btn-outline-info {
+    color: #5c277a;
+    border-color: #5c277a;
+}
+
+.btn-light:hover, .btn-light:active, .btn-light:visited, .btn-light:focus {
+    background-color: #916fa3;
+    border: none;
+    border-color: none;
+}
+
+
+.game-info {
+    background-color: cornsilk;
+}
+
+.win-info, .play-info {
+    margin-left: 6px;
 }
 
 
