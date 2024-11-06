@@ -2,11 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using JoculSpanzuratoarea.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Text.RegularExpressions;
+using JoculSpanzuratoarea.DTO;
+using JoculSpanzuratoarea.Repository;
+using JoculSpanzuratoarea.Interfaces;
 
 namespace JoculSpanzuratoarea.Pages
 {
-
     // session variables
     public enum SessionKeyEnum
     {
@@ -16,70 +17,28 @@ namespace JoculSpanzuratoarea.Pages
         SessionKeyFailCount,
         SessionKeyGuessedFullWord
     }
-    public class IndexModel : PageModel
+    public class IndexPage : PageModel
     {
-        private readonly ILogger<IndexModel> _logger;
-
         // proper ties from PageModel will be accessed from page through @model that's why we don't need to return anything from OnGet()
         // the page (.cshtml) has access to properties from PageModel (.cshtml.cs)
         // private can't be accessed from razor page
-        private Entry EntryWord { get; set; } = new Entry();
-        private Definition DefinitionOfEntry { get; set; } = new Definition();
 
         public List<char> alphabet = "AĂÂBCDEFGHIÎJKLMNOPQRSȘTȚUVWXYZ".ToList();
         public string maskedWordToGuess = "";
 
-        public readonly ApplicationDbContext _context;
+        private readonly IJoculSpanzuratoareaRepository _joculSpanzuratoareaRepository;
 
-        public IndexModel(ApplicationDbContext context, ILogger<IndexModel> logger)
+        public IndexPage(IJoculSpanzuratoareaRepository joculSpanzuratoareaRepository)
         {
-            _context = context;
-            _logger = logger;
-            GetRandomWordFromDex();
-
+            _joculSpanzuratoareaRepository = joculSpanzuratoareaRepository;
         }
 
-        public void GetRandomWordFromDex()
-        {
-            Random random = new Random();
-            int id = random.Next(3, 323319);
-
-            // ======== get the Definition using include
-            Entry entryWithDefinition = _context.Entries
-                .Include(entry => entry.EntryDefinitions)
-                .ThenInclude(entryDefinition => entryDefinition.Definition)
-                .Where(e => e.Id >= id)
-                .Where(e => e.Usable == true)
-                .First();
-
-            // joins 2 tables
-            var wordFromDexWithDefinition = _context.Entries
-                .Join(_context.EntryDefinitions, e => e.Id, ed => ed.EntryId, (e, ed) => new { EntryDefinition = ed, Entry = e })
-                .Join(_context.Definitions, ed => ed.EntryDefinition.DefinitionId, d => d.Id, (ed, d) => new { EntryDefinition = ed, Definition = d })
-                .Where(e => e.EntryDefinition.Entry.Id >= id).Where(e => e.EntryDefinition.Entry.Usable == true).First();
-
-            EntryWord = wordFromDexWithDefinition.EntryDefinition.Entry;
-            DefinitionOfEntry = wordFromDexWithDefinition.Definition;
-
-            bool wordContainsPunctuation = EntryWord.Description.IndexOfAny(new char[] { '(', '/' }) != -1;
-            if (wordContainsPunctuation)
-            {
-                EntryWord.Description = CleanWord(EntryWord.Description);
-            }
-            return;
-        }
-
-        public string CleanWord(string word)
-        {
-            int indexOfNonLetter = word.IndexOfAny(new char[] { '(', '/' });
-            return word.Substring(0, indexOfNonLetter).Trim();
-        }
         public void OnGet()
         {
-            ResetGame();
+            StartGame();
         }
 
-        private void ResetGame()
+        private void StartGame()
         {
             HttpContext.Session.Remove(SessionKeyEnum.SessionKeyWord.ToString());
             HttpContext.Session.Remove(SessionKeyEnum.SessionKeyWordDefinition.ToString());
@@ -103,8 +62,10 @@ namespace JoculSpanzuratoarea.Pages
 
         private void SetWord()
         {
-            string word = EntryWord.Description.ToLower();
-            string wordDefinition = DefinitionOfEntry.InternalRep ?? "";
+            WordWithDefinition wordWithDefinition = _joculSpanzuratoareaRepository.GetRandomWord();
+
+            string word = wordWithDefinition.Word;
+            string wordDefinition = wordWithDefinition.Definition;
             HttpContext.Session.SetString(SessionKeyEnum.SessionKeyWord.ToString(), word);
             HttpContext.Session.SetString(SessionKeyEnum.SessionKeyWordDefinition.ToString(), wordDefinition);
             string maskedWord = "";

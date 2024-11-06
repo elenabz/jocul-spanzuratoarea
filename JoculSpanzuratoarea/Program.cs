@@ -1,24 +1,19 @@
 using JoculSpanzuratoarea.Data;
+using JoculSpanzuratoarea.Interfaces;
+using JoculSpanzuratoarea.Repository;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+builder.Services.AddScoped<IJoculSpanzuratoareaRepository, JoculSpanzuratoareaRepository>();
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
 var serverVersion = new MySqlServerVersion(new Version(8, 0, 31));
-
-builder.Services.AddDbContext<ApplicationDbContext>(
-            dbContextOptions => dbContextOptions
-                .UseMySql(connectionString, serverVersion)
-                // The following three options help with debugging, but should
-                // be changed or removed for production.
-                .LogTo(Console.WriteLine, LogLevel.Information)
-                .EnableSensitiveDataLogging()
-                .EnableDetailedErrors()
-        );
+builder.Services.AddDbContext<ApplicationDbContext>(dbContextOptions => dbContextOptions.UseMySql(connectionString, serverVersion));
 
 // Add services to the container.
-builder.Services.AddRazorPages(); // specific to Razor Pages: AddRazorPages()
+builder.Services.AddRazorPages();
 builder.Services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");
 
 // add distributed memory cache session = store objects in memory 

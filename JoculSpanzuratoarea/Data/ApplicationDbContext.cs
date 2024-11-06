@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Configuration;
 
 namespace JoculSpanzuratoarea.Data
 {
@@ -18,12 +19,6 @@ namespace JoculSpanzuratoarea.Data
         public virtual DbSet<EntryLexeme>? EntryLexemes { get; set; }
 
         public virtual DbSet<Lexeme>? Lexemes { get; set; }
-
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseMySql("server=localhost;port=33060;user=root;password=root;database=spanzuratoarea", Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.32-mysql"));
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
