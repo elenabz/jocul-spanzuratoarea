@@ -1,4 +1,4 @@
-﻿namespace JoculSpanzuratoarea.Pages
+﻿namespace JoculSpanzuratoarea.Models
 {
     public class GameState
     {

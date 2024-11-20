@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc;
-using JoculSpanzuratoarea.Services;
 using JoculSpanzuratoarea.Interfaces;
+using JoculSpanzuratoarea.Models;
 
 namespace JoculSpanzuratoarea.Pages
 {

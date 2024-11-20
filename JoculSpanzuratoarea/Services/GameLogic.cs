@@ -1,6 +1,6 @@
 ﻿using JoculSpanzuratoarea.DTO;
 using JoculSpanzuratoarea.Interfaces;
-using JoculSpanzuratoarea.Pages;
+using JoculSpanzuratoarea.Models;
 
 namespace JoculSpanzuratoarea.Services
 {

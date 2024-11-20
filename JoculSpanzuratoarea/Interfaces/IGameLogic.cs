@@ -1,4 +1,4 @@
-﻿using JoculSpanzuratoarea.Pages;
+﻿using JoculSpanzuratoarea.Models;
 
 namespace JoculSpanzuratoarea.Interfaces
 {
