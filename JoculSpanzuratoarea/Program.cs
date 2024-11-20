@@ -1,12 +1,10 @@
 using JoculSpanzuratoarea.Data;
 using JoculSpanzuratoarea.Interfaces;
 using JoculSpanzuratoarea.Repository;
+using JoculSpanzuratoarea.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-
-
-builder.Services.AddScoped<IJoculSpanzuratoareaRepository, JoculSpanzuratoareaRepository>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var serverVersion = new MySqlServerVersion(new Version(8, 0, 31));
@@ -15,9 +13,16 @@ builder.Services.AddDbContext<ApplicationDbContext>(dbContextOptions => dbContex
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");
+builder.Services.AddScoped<IJoculSpanzuratoareaRepository, JoculSpanzuratoareaRepository>();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddScoped<ISessionManager, SessionManager>();
+builder.Services.AddScoped<IGameLogic, GameLogic>();
+
 
 // add distributed memory cache session = store objects in memory 
 // session = dictionary, key value pairs
+
+// allows us to store objects in memory 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -25,6 +30,7 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+
 builder.Services.Configure<IISServerOptions>(options =>
 {
     options.AllowSynchronousIO = true;
