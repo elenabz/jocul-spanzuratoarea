@@ -34,7 +34,7 @@ namespace JoculSpanzuratoarea.Pages
 
         public JsonResult OnPostLetterClick([FromBody] LetterPostData letterData)
         {
-            string currentLetter = letterData.Letter.ToLower();
+            char currentLetter = Char.ToLower(letterData.Letter);
             var responseData = _gameLogic.ComputeGameState(currentLetter, MAX_GUESSES);
             return new JsonResult(responseData);
         }

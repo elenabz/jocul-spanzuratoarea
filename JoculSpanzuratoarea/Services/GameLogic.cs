@@ -36,7 +36,7 @@ namespace JoculSpanzuratoarea.Services
             SetGameItems();
         }
 
-        public GameState ComputeGameState(string playLetter, int maxGuesses)
+        public GameState ComputeGameState(char playLetter, int maxGuesses)
         {
             string word = _sessionManager.GetWord();
             string maskedWord = _sessionManager.GetMaskedWord();
@@ -46,7 +46,7 @@ namespace JoculSpanzuratoarea.Services
             {
                 for (int i = 0; i < word.Length; i++)
                 {
-                    if (playLetter == word[i].ToString())
+                    if (playLetter == word[i])
                     {
                         letterMatches.Add(i);
                     }
@@ -54,7 +54,7 @@ namespace JoculSpanzuratoarea.Services
                 for (int i = 0; i < letterMatches.Count; i++)
                 {
                     int pos = letterMatches[i];
-                    maskedWord = maskedWord.Remove(pos, 1).Insert(pos, playLetter);
+                    maskedWord = maskedWord.Remove(pos, 1).Insert(pos, playLetter.ToString());
                 }
                 if (letterMatches.Count > 0)
                 {

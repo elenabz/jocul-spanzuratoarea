@@ -2,6 +2,6 @@
 {
     public class LetterPostData
     {
-        public string Letter { get; set; } = "";
+        public char Letter { get; set; }
     }
 }
