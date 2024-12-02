@@ -23,8 +23,8 @@ namespace Spanzuratoarea.Tests.Services
         public void DeleteSessionItems()
         {
             _sessionManager.DeleteSessionItems();
-            var result = _sessionManager.GetWord();
-            Assert.Equal("", result);
+            var storage = _httpSession._sessionStorage;
+            Assert.Empty(storage);
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace Spanzuratoarea.Tests.Services
         [Fact]
         public void IncrementFailCount()
         {
-            int count = 0;
+            int count = 1;
             _sessionManager.IncrementFailCount();
             var result = _sessionManager.GetFailCount();
             Assert.Equal(count, result);
