@@ -46,6 +46,24 @@ namespace Spanzuratoarea.Tests.Services
         }
 
         [Fact]
+        public void SetWordDefinition()
+        {
+            string definition = "word definition";
+            _sessionManager.SetWordDefinition(definition);
+            var result = _sessionManager.GetWordDefinition();
+            Assert.Equal(definition, result);
+        }
+
+        [Fact]
+        public void SetMaskedWord()
+        {
+            string maskedWord = "____a";
+            _sessionManager.SetMaskedWord(maskedWord);
+            var result = _sessionManager.GetMaskedWord();
+            Assert.Equal(maskedWord, result);
+        }
+
+        [Fact]
         public void IncrementFailCount()
         {
             int count = 1;
