@@ -40,14 +40,6 @@ namespace Spanzuratoarea.Tests.Repository
                                 EntryId = 4,
                                 DefinitionId = 4
                             }
-                        },
-                        EntryLexemes = new List<EntryLexeme>()
-                        {
-                            new EntryLexeme() {
-                                Id = 4,
-                                EntryId = 4,
-                                LexemeId = 4
-                            }
                         }
                     },
                     new Entry()
@@ -62,14 +54,6 @@ namespace Spanzuratoarea.Tests.Repository
                                 Id = 5,
                                 EntryId = 5,
                                 DefinitionId = 5
-                            }
-                        },
-                        EntryLexemes = new List<EntryLexeme>()
-                        {
-                            new EntryLexeme() {
-                                Id = 5,
-                                EntryId = 5,
-                                LexemeId = 4
                             }
                         }
                     },
@@ -86,14 +70,6 @@ namespace Spanzuratoarea.Tests.Repository
                                 EntryId = 6,
                                 DefinitionId = 6
                             }
-                        },
-                        EntryLexemes = new List<EntryLexeme>()
-                        {
-                            new EntryLexeme() {
-                                Id = 6,
-                                EntryId = 6,
-                                LexemeId = 4
-                            }
                         }
                     },
                     new Entry()
@@ -108,14 +84,6 @@ namespace Spanzuratoarea.Tests.Repository
                                 Id = 7,
                                 EntryId = 7,
                                 DefinitionId = 7
-                            }
-                        },
-                        EntryLexemes = new List<EntryLexeme>()
-                        {
-                            new EntryLexeme() {
-                                Id = 7,
-                                EntryId = 7,
-                                LexemeId = 4
                             }
                         }
                     },
@@ -132,14 +100,6 @@ namespace Spanzuratoarea.Tests.Repository
                                 EntryId = 8,
                                 DefinitionId = 8
                             }
-                        },
-                        EntryLexemes = new List<EntryLexeme>()
-                        {
-                            new EntryLexeme() {
-                                Id = 8,
-                                EntryId = 8,
-                                LexemeId = 4
-                            }
                         }
                     });
             }
@@ -150,32 +110,27 @@ namespace Spanzuratoarea.Tests.Repository
                     new Definition()
                     {
                         Id = 4,
-                        InternalRep = "Definition for Test 4",
-                        RareGlyphs = ""
+                        InternalRep = "Definition for Test 4"
                     },
                     new Definition()
                     {
                         Id = 5,
-                        InternalRep = "Definition for Test 5",
-                        RareGlyphs = ""
+                        InternalRep = "Definition for Test 5"
                     },
                     new Definition()
                     {
                         Id = 6,
-                        InternalRep = "Definition for Test 6",
-                        RareGlyphs = ""
+                        InternalRep = "Definition for Test 6"
                     },
                     new Definition()
                     {
                         Id = 7,
-                        InternalRep = "Definition for Test 7",
-                        RareGlyphs = ""
+                        InternalRep = "Definition for Test 7"
                     },
                     new Definition()
                     {
                         Id = 8,
-                        InternalRep = "Definition for Test 8",
-                        RareGlyphs = ""
+                        InternalRep = "Definition for Test 8"
                     }
                 );
             }
